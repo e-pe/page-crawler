@@ -1,0 +1,9 @@
+{
+    "name": "icolounge-crawler",
+    "version": "1.0.0",
+    "description": "Logic for crawling ICO data",
+    "dependencies": {
+        "request": "^2.83.0",
+        "string-format": "^0.5.0"
+    }
+}
