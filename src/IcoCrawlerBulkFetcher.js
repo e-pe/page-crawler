@@ -1,6 +1,9 @@
 const request = require('request');
 const format = require('string-format');
 
+const IcoCrawlerBulkFetcherExtractor = 
+    require('./IcoCrawlerBulkFetcherExtractor');
+
 class IcoCrawlerBulkFetcher {
     constructor(settings) {
         this.settings = settings;
@@ -23,7 +26,12 @@ class IcoCrawlerBulkFetcher {
             this.settings.url, 
             { json: true }, 
             (error, response, body) => {
-                console.log(body);
+                let numberOfPages = IcoCrawlerBulkFetcherExtractor
+                    .extractNumberOfIcoPages({
+                        html: body,
+                    });
+
+                console.log('Number of pages to index: ' + numberOfPages);
             });
 
         return this;
