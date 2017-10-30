@@ -9,9 +9,19 @@ class IcoCrawlerBulkFetcher {
         this.settings = settings;
 
         this.onFetchIco = null;
+        this.onFetchIcoPage = null;
+        this.onInit = null;
     }
 
-    addOnFetchIcoList(onFetchIcoList) {
+    addOnInit(onInit) {
+        this.onInit = onInit;
+
+        return this;
+    }
+
+    addOnFetchIcoPage(onFetchIcoPage) {
+        this.onFetchIcoPage = onFetchIcoPage;
+
         return this;
     }
 
@@ -30,6 +40,12 @@ class IcoCrawlerBulkFetcher {
                     .extractNumberOfIcoPages({
                         html: body,
                     });
+
+                if (this.onInit) {
+                    this.onInit({
+                        pages: numberOfPages
+                    });
+                }
 
                 console.log('Number of pages to index: ' + numberOfPages);
             });

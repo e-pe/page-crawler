@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Logic for crawling ICO data",
     "dependencies": {
+        "aws-sdk": "^2.141.0",
         "cheerio": "^1.0.0-rc.2",
         "request": "^2.83.0",
         "sanitize-html": "^1.14.1",
