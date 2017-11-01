@@ -11,6 +11,7 @@ class IcoCrawlerRunInitializer {
     initializeNextRun(initializeNextRunOptions) {
         this.fetchLastRun({
             onFetchRun: (fetchRunOptions) => {
+
                 this.createNewRun({
                     runId: fetchRunOptions.lastRunId + 1,
                     pagesToIndex: initializeNextRunOptions.pagesToIndex,
@@ -18,7 +19,7 @@ class IcoCrawlerRunInitializer {
                     onCreateRun: () => {
 
                     }
-                })
+                });
             }
         });
     }
