@@ -1,8 +1,10 @@
 const request = require('request');
-const format = require('string-format');
 
 const IcoCrawlerBulkFetcherExtractor = 
     require('./IcoCrawlerBulkFetcherExtractor');
+
+const IcoCrawlerBulkFetcherRequester = 
+    require('./IcoCrawlerBulkFetcherRequester');
 
 class IcoCrawlerBulkFetcher {
     constructor(settings) {
@@ -36,14 +38,48 @@ class IcoCrawlerBulkFetcher {
             this.settings.url, 
             { json: true }, 
             (error, response, body) => {
+                let pageHtml = IcoCrawlerBulkFetcherExtractor
+                    .extractHtml({
+                        html: body
+                    });
+
                 let numberOfPages = IcoCrawlerBulkFetcherExtractor
                     .extractNumberOfIcoPages({
-                        html: body,
+                        html: pageHtml,
                     });
 
                 if (this.onInit) {
                     this.onInit({
                         pages: numberOfPages
+                    });
+                }
+
+                if (this.onFetchIcoPage) {
+                    this.onFetchIcoPage({
+                        pageHtml: pageHtml
+                    });
+                }
+
+                if (numberOfPages > 0) {
+                    IcoCrawlerBulkFetcherRequester.performRequests({
+                        numberOfPages: numberOfPages,
+                        pageUrlPattern: this.settings.pageUrl,
+
+                        onPageFetch: (options) => {
+                            if (this.onFetchIcoPage) {
+                                this.onFetchIcoPage({
+                                    pageHtml: pageHtml
+                                });
+                            }
+                        },
+
+                        onSuccess: () => {
+                            console.log('All pages were fetched.')
+                        },
+
+                        onFailure: (options) => {
+                            console.log('Error occured: ' + options.error);
+                        }
                     });
                 }
 

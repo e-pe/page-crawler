@@ -64,7 +64,7 @@ class IcoCrawlerRunInitializer {
             Item: {
                 RunId: options.runId,
                 RunName: 'icolounge-index-run',
-                PageCount: parseInt(options.pagesToIndex),
+                PageCount: options.pagesToIndex,
                 Timestamp: (new Date()).toISOString()
             }
         };

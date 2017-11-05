@@ -14,8 +14,8 @@ const icoCrawlerSettings = require('./IcoCrawlerSettings');
                     });
             })
 
-            .addOnFetchIcoPage(() => {
-
+            .addOnFetchIcoPage((options) => {
+                
             })
 
             .addOnFetchIco(() => {

@@ -2,20 +2,24 @@ const cheerio = require('cheerio');
 const sanitizeHtml = require('sanitize-html');
 
 class IcoCrawlerBulkFetcherExtractor {
-    static extractNumberOfIcoPages(options) {
-        let firstPageHtml = sanitizeHtml(options.html, {
+    static extractHtml(options) {
+        let pageHtml = sanitizeHtml(options.html, {
             allowedAttributes: {
                 '*': [ 'class' ]
             }
         });
-        
-        let firstPageSelector = cheerio.load(firstPageHtml);
+
+        return pageHtml;
+    }
+
+    static extractNumberOfIcoPages(options) {
+        let firstPageSelector = cheerio.load(options.html);
         let numberOfPages = 
             firstPageSelector('.ico_list > .pages > .num')
                 .last()
                 .text();
 
-        return numberOfPages;
+        return numberOfPages !== '' ? parseInt(numberOfPages) : 0;
     }
 }
 
