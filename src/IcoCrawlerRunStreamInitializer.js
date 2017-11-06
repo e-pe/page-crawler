@@ -35,23 +35,46 @@ class IcoCrawlerRunStreamInitializer {
             }
         };
 
-        firehose.createDeliveryStream(icoPageStreamParams, (error, data) => {
+        firehose.createDeliveryStream(icoStreamParams, (error, data) => {
             if (error) {
                 console.log(error);
-                
+
                 return;
             }
 
-            firehose.createDeliveryStream(icoStreamParams, (error, data) => {
+            firehose.createDeliveryStream(icoPageStreamParams, (error, data) => {
                 if (error) {
                     console.log(error);
-
+                    
                     return;
                 }
 
-                if (options.onSuccess) {
-                    options.onSuccess();
-                }
+                let onCanFinish = () => {
+                    let params = {
+                        DeliveryStreamName: icoPageStreamParams.DeliveryStreamName
+                    };
+
+                    firehose.describeDeliveryStream(params, function(err, data) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        
+                        let streamStatus = data.DeliveryStreamDescription
+                            .DeliveryStreamStatus;
+        
+                        if (streamStatus === 'CREATING') {
+                            setTimeout(() => {
+                                onCanFinish();
+                            }, 60000);
+                        } else if (streamStatus === 'ACTIVE') {
+                            if (options.onSuccess) {
+                                options.onSuccess();
+                            }
+                        }
+                    });
+                };
+
+                onCanFinish();
             });
         });
 
@@ -68,19 +91,42 @@ class IcoCrawlerRunStreamInitializer {
                 DeliveryStreamName: opts.deliveryStreamName
             };
 
-            firehose.deleteDeliveryStream(deleteStreamParams, (error, data) => {
-                if (error) {
-                    console.log(error);
+            let onDeleteStream = () => {
+                firehose.deleteDeliveryStream(deleteStreamParams, (error, data) => {
+                    if (error) {
+                        console.log(error);
+    
+                        return;
+                    }
+    
+                    console.log('Delivery stream -' + opts.deliveryStreamName + ' - was deleted.');
+    
+                    if (opts.onSuccess) {
+                        opts.onSuccess();
+                    }
+                });
+            }; 
 
-                    return;
-                }
-
-                console.log('Delivery stream -' + opts.deliveryStreamName + ' - was deleted.');
-
-                if (opts.onSuccess) {
-                    opts.onSuccess();
-                }
-            });
+            let onCanDeleteStream = () => {
+                let params = {
+                    DeliveryStreamName: opts.deliveryStreamName
+                };
+    
+                firehose.describeDeliveryStream(params, function(error, data) {
+                    let streamStatus = data.DeliveryStreamDescription
+                        .DeliveryStreamStatus;
+    
+                    if (streamStatus === 'CREATING') {
+                        setTimeout(() => {
+                            onCanDeleteStream();
+                        }, 60000);
+                    } else if (streamStatus === 'ACTIVE') {
+                        onDeleteStream();
+                    }
+                });
+            };
+            
+            onCanDeleteStream();
         };
 
         let listStreamParams = {

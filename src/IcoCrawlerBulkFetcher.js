@@ -52,14 +52,8 @@ class IcoCrawlerBulkFetcher {
                     this.onInit({
                         pages: numberOfPages,
 
-                        onInitSuccess: () => {
-                            
-                            if (this.onFetchIcoPage) {
-                                this.onFetchIcoPage({
-                                    pageHtml: pageHtml
-                                });
-                            }
-            
+                        onInitSuccess: (opts) => {
+
                             if (numberOfPages > 0) {
                                 IcoCrawlerBulkFetcherRequester.performRequests({
                                     numberOfPages: numberOfPages,
@@ -68,6 +62,7 @@ class IcoCrawlerBulkFetcher {
                                     onPageFetch: (options) => {
                                         if (this.onFetchIcoPage) {
                                             this.onFetchIcoPage({
+                                                runId: opts.runId,
                                                 pageHtml: pageHtml,
                                                 pageIndex: options.pageIndex
                                             });

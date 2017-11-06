@@ -1,6 +1,7 @@
 const IcoCrawlerBulkFetcher = require('./IcoCrawlerBulkFetcher');
 const IcoCrawlerFetcher = require('./IcoCrawlerFetcher');
 const IcoCrawlerRunInitializer = require('./IcoCrawlerRunInitializer');
+const IcoCrawlerRunStreamPublisher = require('./IcoCrawlerRunStreamPublisher');
 const IcoCrawlerRunStreamInitializer = require('./IcoCrawlerRunStreamInitializer');
 
 const icoCrawlerSettings = require('./IcoCrawlerSettings');
@@ -25,7 +26,9 @@ const icoCrawlerSettings = require('./IcoCrawlerSettings');
     
                                         onSuccess: () => {
                                             if (options.onInitSuccess) {
-                                                options.onInitSuccess();
+                                                options.onInitSuccess({
+                                                    runId: opts.runId
+                                                });
                                             }
                                         }
                                     });
@@ -38,6 +41,11 @@ const icoCrawlerSettings = require('./IcoCrawlerSettings');
 
             .addOnFetchIcoPage((options) => {
                 console.log('Page ' + options.pageIndex + ' content was fetched.')
+
+                let streamPublisher = new IcoCrawlerRunStreamPublisher(options.runId)
+                    .publishDataToIcoPageStream({
+                        data: options.pageHtml
+                    });
             })
 
             .addOnFetchIco(() => {
