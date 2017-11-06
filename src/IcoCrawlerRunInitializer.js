@@ -11,13 +11,18 @@ class IcoCrawlerRunInitializer {
     initializeNextRun(initializeNextRunOptions) {
         this.fetchLastRun({
             onFetchRun: (fetchRunOptions) => {
+                let nextRunId = fetchRunOptions.lastRunId + 1;
 
                 this.createNewRun({
-                    runId: fetchRunOptions.lastRunId + 1,
+                    runId: nextRunId,
                     pagesToIndex: initializeNextRunOptions.pagesToIndex,
 
                     onCreateRun: () => {
-
+                        if (initializeNextRunOptions.onNextRunInitialized) {
+                            initializeNextRunOptions.onNextRunInitialized({
+                                runId: nextRunId
+                            });
+                        }
                     }
                 });
             }

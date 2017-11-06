@@ -15,7 +15,8 @@ class IcoCrawlerBulkFetcherRequester {
                 onSuccess: (opts) => {
                     if (options.onPageFetch) {
                         options.onPageFetch({
-                            rawHtml: opts.rawHtml
+                            rawHtml: opts.rawHtml,
+                            pageIndex: onRequestOptions.pagesToIndex
                         });
                     }
 

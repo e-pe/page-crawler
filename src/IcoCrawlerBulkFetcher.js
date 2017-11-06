@@ -50,35 +50,39 @@ class IcoCrawlerBulkFetcher {
 
                 if (this.onInit) {
                     this.onInit({
-                        pages: numberOfPages
-                    });
-                }
+                        pages: numberOfPages,
 
-                if (this.onFetchIcoPage) {
-                    this.onFetchIcoPage({
-                        pageHtml: pageHtml
-                    });
-                }
-
-                if (numberOfPages > 0) {
-                    IcoCrawlerBulkFetcherRequester.performRequests({
-                        numberOfPages: numberOfPages,
-                        pageUrlPattern: this.settings.pageUrl,
-
-                        onPageFetch: (options) => {
+                        onInitSuccess: () => {
+                            
                             if (this.onFetchIcoPage) {
                                 this.onFetchIcoPage({
                                     pageHtml: pageHtml
                                 });
                             }
-                        },
-
-                        onSuccess: () => {
-                            console.log('All pages were fetched.')
-                        },
-
-                        onFailure: (options) => {
-                            console.log('Error occured: ' + options.error);
+            
+                            if (numberOfPages > 0) {
+                                IcoCrawlerBulkFetcherRequester.performRequests({
+                                    numberOfPages: numberOfPages,
+                                    pageUrlPattern: this.settings.pageUrl,
+            
+                                    onPageFetch: (options) => {
+                                        if (this.onFetchIcoPage) {
+                                            this.onFetchIcoPage({
+                                                pageHtml: pageHtml,
+                                                pageIndex: options.pageIndex
+                                            });
+                                        }
+                                    },
+            
+                                    onSuccess: () => {
+                                        console.log('All pages were fetched.')
+                                    },
+            
+                                    onFailure: (options) => {
+                                        console.log('Error occured: ' + options.error);
+                                    }
+                                });
+                            }
                         }
                     });
                 }
